@@ -22,6 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flet==0.26.0 requests python-dateutil pillow
+        pip install 'flet[all]==0.26.0'
         
     - name: Set up Java
       uses: actions/setup-java@v4
@@ -29,39 +30,31 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
         
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.16.0'
-        channel: 'stable'
-        
-    - name: Install Android SDK
+    - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
     - name: Install Flet CLI
-      run: |
-        pip install flet-cli==0.26.0
-        pip install 'flet[all]==0.26.0'
+      run: pip install flet-cli==0.26.0
       
     - name: Create assets directory
-      run: mkdir -p assets
+      run: |
+        mkdir -p assets
+        mkdir -p android/app/src/main/res/mipmap-hdpi
+        mkdir -p android/app/src/main/res/mipmap-mdpi
+        mkdir -p android/app/src/main/res/mipmap-xhdpi
+        mkdir -p android/app/src/main/res/mipmap-xxhdpi
+        mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+        
+    - name: Accept Android licenses
+      run: yes | sdkmanager --licenses
       
-    - name: Flutter setup
-      run: |
-        flutter config --no-analytics
-        flutter doctor -v
-        flutter pub get
-        
-    - name: Create local.properties
-      run: |
-        echo "flutter.sdk=$FLUTTER_HOME" > android/local.properties
-        
     - name: Build APK
       run: |
-        flutter build apk --release
+        export ANDROID_HOME=/usr/local/lib/android/sdk
+        flet build apk --release
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release
-        path: build/app/outputs/apk/release/app-release.apk
+        path: build/app/outputs/flutter-apk/app-release.apk
