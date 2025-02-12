@@ -1,7 +1,7 @@
 buildscript {
     ext {
         kotlin_version = '1.8.0'
-        agp_version = '8.0.0'
+        agp_version = '7.4.2'  // 使用更稳定的版本
     }
     repositories {
         google()
@@ -19,14 +19,6 @@ allprojects {
         google()
         mavenCentral()
     }
-}
-
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
 }
 
 task clean(type: Delete) {
